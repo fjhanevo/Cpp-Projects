@@ -4,17 +4,22 @@ class Player {
 private:
     unsigned int health;
     glm::vec2 position;
-    int velocity; 
-    int width, height;
+    glm::vec2 velocity; 
+    float speed;
+    glm::vec2 size;;
     unsigned int texture;
 public:
-    Player(int width, int height); 
-    void update();
+    static constexpr int MAX_HEALTH = 100;
+
+    Player(glm::vec2 size, float speed); 
+    void update(float delta_time);
     void draw();
+
     void move(const glm::vec2 &direction);
-    bool shoot(const int key); 
+    void shoot(); 
     void take_damage();
-    int get_size() const;
+
+    glm::vec2 get_size() const;
     glm::vec2 get_position() const;
 };
 

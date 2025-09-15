@@ -1,33 +1,29 @@
 #include "player.h"
 #include <GLFW/glfw3.h>
+#include <glm/vec2.hpp>
 
-constexpr int max_health = 100;
-Player::Player(int width, int height)
-    : health(max_health), position(0.0f,0.0f), velocity(10),
-      width(width), height(height), texture(0) 
+Player::Player(glm::vec2 size, float speed)
+    : health(MAX_HEALTH), position(0.0f,0.0f), velocity(0.0f, 0.0f),
+      speed(speed), size(size), texture(0) 
 {}
 
-void Player::update()
+void Player::update(float delta_time)
 {
-    position.x += velocity;
-    position.y += velocity;
+    position += velocity * speed * delta_time; 
 }
 
 void Player::move(const glm::vec2 &direction) 
 {
-    position.x += direction.x * velocity;
-    position.y += direction.y * velocity;
+    velocity += direction;
 }
 
-bool Player::shoot(const int key)
+void Player::shoot()
 {
-    if (key == GLFW_KEY_SPACE) return true;
-    return false;
 }
 
-int Player::get_size() const
+glm::vec2 Player::get_size() const
 {
-    return width*height;
+    return size;
 }
 
 glm::vec2 Player::get_position() const

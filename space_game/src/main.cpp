@@ -1,11 +1,18 @@
+#include <glm/ext/matrix_transform.hpp>
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <strings.h>
 #include <math.h>
 
+// texture includes 
 #include "shader.h"
 #include "stb_image.h"
+
+// vector includes 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -97,9 +104,6 @@ int main()
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        std::cout << "width: " << width 
-                  <<"\nheight: " << height
-                  << "\nnr_channels: " << nr_channels << '\n';
     }
     else {
         std::cout << "Failed to load texture\n";
@@ -130,6 +134,8 @@ int main()
     shader.set_int("texture2", 1);
 
 
+    // ------- Vector -------
+
     // ------- Render Loop -------
     while (!glfwWindowShouldClose(window)) {
         process_input(window);
@@ -142,9 +148,21 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
+
+        // create tranformations
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f,0.0f,1.0f));
+
         //activate shader
+        shader.use();
+        unsigned int transform_loc = glGetUniformLocation(shader.ID, "transform");
+        glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        // get matrix's uniform location and set matrix
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
         // swap buffers and poll IO events
         glfwSwapBuffers(window);

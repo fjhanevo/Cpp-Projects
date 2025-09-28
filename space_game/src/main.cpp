@@ -1,4 +1,5 @@
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/geometric.hpp>
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -18,8 +19,25 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// Camera variables
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
+bool first_mouse = true;
+float yaw = -90.0f;
+float pitch = 0.0f;
+float last_x = 800.0f / 2.0;
+float last_y = 600.0f / 2.0;
+float fov = 45.0f;
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void process_input(GLFWwindow *window);
+void mouse_callback(GLFWwindow *window, double x_pos, double y_pos);
+void scroll_callback(GLFWwindow *window, double x_offset, double y_offset);
 
 int main()
 {
@@ -41,6 +59,12 @@ int main()
     // make the window on a single thread, whatever that means
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    // sett mouse capture settings
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
     // load all opengl function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -178,20 +202,24 @@ int main()
     };
 
     // ------- Projections -------
-    // params FOV, aspect-ratio, near, far
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
-    // view matrix
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     // projection matrix
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
-
     // we can set the projection outside the render loop as it rarely changes
     shader.set_mat4("projection", projection);
 
+    // ------- Camera -------
+    glm::mat4 view;
+
     // ------- Render Loop -------
     while (!glfwWindowShouldClose(window)) {
+
+        // update delta time
+        float current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
+
         process_input(window);
 
         // draw background first
@@ -206,7 +234,8 @@ int main()
         //activate shader
         shader.use();
 
-        // send matrix to shader
+        // camera transformation
+        view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
         shader.set_mat4("view",view);
 
         // get matrix's uniform location and set matrix
@@ -246,4 +275,59 @@ void process_input(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || 
         glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) 
         glfwSetWindowShouldClose(window, true);
+
+    float camera_speed = 2.5f * delta_time;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera_pos += camera_speed * camera_front;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera_pos -= camera_speed * camera_front;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+
+}
+
+void mouse_callback(GLFWwindow *window, double x_pos, double y_pos)
+{
+    float x_offset = x_pos - last_x;
+    float y_offset = last_y - y_pos;
+
+    if (first_mouse) {
+        last_x = x_pos;
+        last_y = y_pos;
+        first_mouse = false;
+
+    }
+
+    last_x = x_pos;
+    last_y = y_pos;
+
+    const float sensitivity = 0.1f;
+    x_offset *= sensitivity;
+    y_offset *= sensitivity;
+
+    yaw += x_offset;
+    pitch += y_offset;
+
+    // pitch bounds check
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos (glm::radians(pitch));
+    camera_front = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
+{
+    fov -= (float)y_offset;
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 45.0f)
+        fov = 45.0f;
 }

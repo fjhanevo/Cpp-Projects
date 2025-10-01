@@ -7,11 +7,15 @@ project(snake_game)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
+configure_file(config.h.in config.h)
+
 # ---- Executables ---- 
 add_executable(snake_game
     src/main.cpp
-    src/glad.c
     src/game.cpp
+    src/extern/glad.c
+    src/extern/shader.cpp
+    src/extern/stb_image.cpp
 )
 
 

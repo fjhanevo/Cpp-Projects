@@ -1,0 +1,1 @@
+#define RESOURE_DIR "@PROJECT_SOURCE_DIR@/res"

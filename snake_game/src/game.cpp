@@ -1,12 +1,14 @@
 #include "game.h"
+#include "shader.h"
+#include "texture.h"
+#include "resource_manager.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 
 
-
 Game::Game(unsigned int width, unsigned int height)
-: screen_width(width), screen_height(height), window(nullptr)
+: screen_width(width), screen_height(height), window(nullptr), state(GAME_ACTIVE)
 {
     init();
 }

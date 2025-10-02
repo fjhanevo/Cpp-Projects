@@ -2,6 +2,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+enum GameState {
+    GAME_ACTIVE,
+    GAME_MENU,
+    GAME_WIN
+};
+
 class Game {
 public:
     Game(unsigned int width, unsigned int height);
@@ -11,6 +17,7 @@ public:
 private:
     GLFWwindow *window;
     unsigned int screen_width, screen_height;
+    GameState state;
     void init();
     void cleanup();
     void render();

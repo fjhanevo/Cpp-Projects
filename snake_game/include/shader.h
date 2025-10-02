@@ -10,11 +10,13 @@ public:
     unsigned int ID;
 
     // Constructor
-    Shader(const char *vertex_path, const char *fragment_path);
+    Shader() { }
+ 
+    // sets current shader as active
+    Shader &use();
 
-    // activate shader
-    void use();
-
+    // compile shader from given code
+    void compile(const char *vertex_source, const char *fragment_source);
     // some utility unifrom functions
     void set_bool(const std::string &name, bool value) const;
     void set_int(const std::string &name, int value) const;

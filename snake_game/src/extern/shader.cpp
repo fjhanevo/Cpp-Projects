@@ -1,76 +1,39 @@
 #include "shader.h"
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
-Shader::Shader(const char *vertex_path, const char *fragment_path)
+Shader &Shader::use()
 {
-    // 1. get vertex/fragment source code from filepath
-    std::string vertex_code;
-    std::string fragment_code;
-    std::ifstream v_shader_file;
-    std::ifstream f_shader_file;
-
-    // ensure ifstream objects can throw exceptions
-    v_shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    f_shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-    try {
-        // open files
-        v_shader_file.open(vertex_path);
-        f_shader_file.open(fragment_path);
-        
-        std::stringstream v_shader_stream, f_shader_stream;
-        // read file contents into streams
-        v_shader_stream << v_shader_file.rdbuf();
-        f_shader_stream << f_shader_file.rdbuf();
-
-        // close files
-        v_shader_file.close();
-        f_shader_file.close();
-        
-        // convert stream to strings
-        vertex_code = v_shader_stream.str();
-        fragment_code= f_shader_stream.str();
-    }
-    catch (std::ifstream::failure e) {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << e.what();
-    }
-
-    const char *v_shader_code = vertex_code.c_str();
-    const char *f_shader_code = fragment_code.c_str();
-
-    // 2. compile shaders
-    unsigned int vertex, fragment;
-
-    // vertex shader
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &v_shader_code, NULL);
-    glCompileShader(vertex);
-    check_compile_errors(vertex, "VERTEX");
-
-    // fragment shader
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &f_shader_code, NULL);
-    glCompileShader(fragment);
-    check_compile_errors(fragment, "FRAGMENT");
-
-    // link shaders
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
-    check_compile_errors(ID, "PROGRAM");
-
-    // delete shaders after linking
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
+    glUseProgram(this->ID);
+    return *this;
 }
 
-void Shader::use()
+void Shader::compile(const char *vertex_source, const char *fragment_source)
 {
-    glUseProgram(ID);
+    unsigned int s_vertex, s_fragment;
+
+    // vertex shader
+    s_vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(s_vertex, 1, &vertex_source, NULL);
+    glCompileShader(s_vertex);
+    check_compile_errors(s_vertex, "VERTEX");
+
+    // fragment shader
+    s_fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(s_fragment, 1, &fragment_source, NULL);
+    glCompileShader(s_fragment);
+    check_compile_errors(s_fragment, "FRAGMENT");
+
+    this->ID = glCreateProgram();
+    glAttachShader(this->ID, s_vertex);
+    glAttachShader(this->ID, s_fragment);
+    glLinkProgram(this->ID);
+    check_compile_errors(this->ID, "PROGRAM");
+
+    // delete when linking is done
+    glDeleteShader(s_vertex);
+    glDeleteShader(s_fragment);
+
 }
 
 void Shader::set_bool(const std::string &name, bool value) const

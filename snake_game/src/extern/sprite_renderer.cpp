@@ -1,6 +1,8 @@
 #include "sprite_renderer.h"
 #include "texture.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 void SpriteRenderer::init_render_data()
 {
     unsigned int VBO;
@@ -27,3 +29,14 @@ void SpriteRenderer::init_render_data()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
+
+void SpriteRenderer::draw_sprite(
+    Texture2D &texture, glm::vec2 position,
+    glm::vec2 size, float rotate, glm::vec3 color)
+{
+    this->shader.use();
+    glm::mat4 model = glm::mat4(1.0f);
+
+    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+}
+

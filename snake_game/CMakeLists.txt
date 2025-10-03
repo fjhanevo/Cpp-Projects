@@ -15,13 +15,18 @@ add_executable(snake_game
     src/game.cpp
     src/extern/glad.c
     src/extern/shader.cpp
+    src/extern/texture.cpp
+    src/extern/resource_manager.cpp
+    src/extern/sprite_renderer.cpp
     src/extern/stb_image.cpp
+
 )
 
 
 target_include_directories(snake_game PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include         # for header files
     ${CMAKE_CURRENT_SOURCE_DIR}/libs            # for external headers
+    ${CMAKE_BINARY_DIR}
 )
 target_link_libraries(snake_game PRIVATE OpenGL::GL glfw)
 

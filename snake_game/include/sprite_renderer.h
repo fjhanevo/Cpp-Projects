@@ -16,4 +16,5 @@ private:
     unsigned int quadVAO;
 
     void init_render_data();
+
 };

@@ -3,6 +3,17 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+SpriteRenderer::SpriteRenderer(Shader &shader)
+{
+    this->shader = shader;
+    this->init_render_data();
+}
+
+SpriteRenderer::~SpriteRenderer()
+{
+    glDeleteVertexArrays(1, &this->quadVAO);
+}
+
 void SpriteRenderer::init_render_data()
 {
     unsigned int VBO;

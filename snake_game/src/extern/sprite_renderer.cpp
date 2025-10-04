@@ -1,6 +1,7 @@
 #include "sprite_renderer.h"
 #include "texture.h"
 
+#include <GL/gl.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 SpriteRenderer::SpriteRenderer(Shader &shader)
@@ -45,9 +46,27 @@ void SpriteRenderer::draw_sprite(
     Texture2D &texture, glm::vec2 position,
     glm::vec2 size, float rotate, glm::vec3 color)
 {
+    // prepare transformations
     this->shader.use();
     glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(position, 0.0f));
 
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
+    model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
+
+    model = glm::scale(model, glm::vec3(size, 1.0f));
+
+    this->shader.set_mat4("model", model);
+    
+    // render textured quads
+    this->shader.set_vec3("spriteColor", color);
+    glActiveTexture(GL_TEXTURE0);
+    texture.bind();
+
+    
+    glBindVertexArray(this->quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 }
 

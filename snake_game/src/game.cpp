@@ -13,6 +13,7 @@ SpriteRenderer *Renderer;
 std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
 std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 std::string texture_path = std::string(RESOURCE_DIR) + "/textures/sofie.png";
+std::string background_path = std::string(RESOURCE_DIR) + "/textures/background.jpg";
 
 Game::Game(unsigned int width, unsigned int height)
 : screen_width(width), screen_height(height), window(nullptr), state(GAME_ACTIVE)
@@ -67,7 +68,7 @@ void Game::init()
 
     Shader shader = ResourceManager::get_shader("sprite");
     Renderer = new SpriteRenderer(shader);
-    ResourceManager::load_texture(texture_path.c_str(), true, "sofie");
+    ResourceManager::load_texture(background_path.c_str(),false,  "background");
 
 }
 
@@ -88,10 +89,17 @@ void Game::render()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    Texture2D tex = ResourceManager::get_texture("sofie");
-    Renderer->draw_sprite(tex,
-        glm::vec2(200.f, 200.f), glm::vec2(300.0f, 400.0f), 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    glfwSwapBuffers(window);
+    // Draw background
+    Texture2D background = ResourceManager::get_texture("background");
+    Renderer->draw_sprite(
+        background,
+        glm::vec2(0.0f, 0.0f),                                  // top left corner
+        glm::vec2(this->screen_width, this->screen_height),     // fill the entire screen
+        0.0,                                                    // rotation
+        glm::vec3(1.0f, 1.0f, 1.0f)                             // full color
+    );
+
+        glfwSwapBuffers(window);
 }
 
 void Game::cleanup()
@@ -99,7 +107,6 @@ void Game::cleanup()
     delete Renderer;
     ResourceManager::clear();
     glfwTerminate();
-
 }
 
 

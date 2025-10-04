@@ -46,12 +46,12 @@ Shader ResourceManager::load_shader_from_file(const char *v_shader_file, const c
 
     try {
         std::ifstream vertex_shader_file(v_shader_file);
-        std::ifstream fragment_shader_file(v_shader_file);
+        std::ifstream fragment_shader_file(f_shader_file);
         std::stringstream v_shader_stream, f_shader_stream;
 
         // read file buffer into streams
         v_shader_stream << vertex_shader_file.rdbuf();
-        v_shader_stream << vertex_shader_file.rdbuf();
+        f_shader_stream << fragment_shader_file.rdbuf();
 
         // close when done reading
         vertex_shader_file.close();

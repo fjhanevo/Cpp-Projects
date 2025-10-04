@@ -1,8 +1,6 @@
 #pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "sprite_renderer.h"
-
 
 enum GameState {
     GAME_ACTIVE,

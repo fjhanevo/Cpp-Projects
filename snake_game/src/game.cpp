@@ -4,22 +4,21 @@
 #include "sprite_renderer.h"
 #include "texture.h"
 #include "resource_manager.h"
+#include "config.h"
+#include "snake.h"
+
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
-#include "config.h"
 #include <iostream>
-
 #include <glm/gtc/matrix_transform.hpp>
 
 SpriteRenderer *Renderer;
 std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
 std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
-std::string texture_path = std::string(RESOURCE_DIR) + "/textures/sofie.png";
-std::string background_path = std::string(RESOURCE_DIR) + "/textures/background.jpg";
 
 
 Game::Game(unsigned int width, unsigned int height)
-: screen_width(width), screen_height(height), window(nullptr), state(GAME_ACTIVE)
+: screen_width(width), screen_height(height), window(nullptr), state(GAME_ACTIVE), snake(width, height)
 {
     init();
 }
@@ -77,7 +76,10 @@ void Game::init()
     temp_tex.generate(1, 1, white_px);
     ResourceManager::textures["temp"] = temp_tex;
 
+
 }
+
+
 
 void Game::run()
 {
@@ -97,6 +99,7 @@ void Game::render()
     glClearColor(0.3f, 0.5f, 0.0f, 1.0f);   // draw a green background
     glClear(GL_COLOR_BUFFER_BIT);
     draw_borders();
+    snake.draw(*Renderer);
 
     glfwSwapBuffers(window);
 }
@@ -153,6 +156,7 @@ void Game::draw_borders()
     }
 }
 
+
 // ----- Static callback functions -----
 
 void Game::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -169,7 +173,6 @@ void Game::key_callback(GLFWwindow *window, int key, int scancode, int action, i
 void Game::framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    
 }
 
 

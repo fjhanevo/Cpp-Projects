@@ -1,8 +1,10 @@
 #include "game.h"
 #include "shader.h"
+#include "texture.h"
 #include "sprite_renderer.h"
 #include "texture.h"
 #include "resource_manager.h"
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include "config.h"
 #include <iostream>
@@ -14,6 +16,7 @@ std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
 std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 std::string texture_path = std::string(RESOURCE_DIR) + "/textures/sofie.png";
 std::string background_path = std::string(RESOURCE_DIR) + "/textures/background.jpg";
+
 
 Game::Game(unsigned int width, unsigned int height)
 : screen_width(width), screen_height(height), window(nullptr), state(GAME_ACTIVE)
@@ -57,7 +60,6 @@ void Game::init()
         std::cout << "Failed to initialize GLAD\n";
         return;
     }
-
     // load shaders
     ResourceManager::load_shader(vert_path.c_str(), frag_path.c_str(), "sprite");
     // configure shaders
@@ -68,7 +70,12 @@ void Game::init()
 
     Shader shader = ResourceManager::get_shader("sprite");
     Renderer = new SpriteRenderer(shader);
-    ResourceManager::load_texture(background_path.c_str(),false,  "background");
+
+    // Create a texture placeholder
+    unsigned char white_px[3] = { 255, 255, 255 };
+    Texture2D temp_tex;
+    temp_tex.generate(1, 1, white_px);
+    ResourceManager::textures["temp"] = temp_tex;
 
 }
 
@@ -87,19 +94,11 @@ void Game::process_input()
 
 void Game::render()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.3f, 0.5f, 0.0f, 1.0f);   // draw a green background
     glClear(GL_COLOR_BUFFER_BIT);
-    // Draw background
-    Texture2D background = ResourceManager::get_texture("background");
-    Renderer->draw_sprite(
-        background,
-        glm::vec2(0.0f, 0.0f),                                  // top left corner
-        glm::vec2(this->screen_width, this->screen_height),     // fill the entire screen
-        0.0,                                                    // rotation
-        glm::vec3(1.0f, 1.0f, 1.0f)                             // full color
-    );
+    draw_borders();
 
-        glfwSwapBuffers(window);
+    glfwSwapBuffers(window);
 }
 
 void Game::cleanup()
@@ -109,6 +108,50 @@ void Game::cleanup()
     glfwTerminate();
 }
 
+// ----- Game functions ----- 
+void Game::draw_borders()
+{
+    Texture2D border_tex = ResourceManager::get_texture("temp");
+    glm::vec3 border_color = glm::vec3(0.6f, 0.3f, 0.0f);
+    float tile_size = 20.0f;
+    // draw top and bottom border
+    for (unsigned int x = 0; x < this->screen_width; x++)
+    {
+        // top border
+        Renderer->draw_sprite(
+            border_tex,
+            glm::vec2(x, 0.0f),
+            glm::vec2(tile_size, tile_size),
+            0.0f, border_color
+        );
+        // Bottom border
+        Renderer->draw_sprite(
+            border_tex,
+            glm::vec2(x, this->screen_height - tile_size),
+            glm::vec2(tile_size, tile_size),
+            0.0f, border_color
+        );
+    }
+
+    for (unsigned int y = 0; y < this->screen_height; y++)
+    {
+        // Right column
+        Renderer->draw_sprite(
+            border_tex,
+            glm::vec2(0.0f, y),
+            glm::vec2(tile_size, tile_size),
+            0.0f, border_color
+        );
+
+        // Left column
+        Renderer->draw_sprite(
+            border_tex,
+            glm::vec2(this->screen_width - tile_size, y),
+            glm::vec2(tile_size, tile_size),
+            0.0f, border_color
+        );
+    }
+}
 
 // ----- Static callback functions -----
 
@@ -126,11 +169,7 @@ void Game::key_callback(GLFWwindow *window, int key, int scancode, int action, i
 void Game::framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    Game *game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-    if (game) {
-        game->screen_width = width;
-        game->screen_height = height;
-    }
+    
 }
 
 

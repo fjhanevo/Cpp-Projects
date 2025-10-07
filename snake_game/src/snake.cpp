@@ -9,12 +9,15 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height)
     this->segments.clear();
 
     // create snake in the centre of the screen
-    glm::vec2 snake_head = { screen_width / 2.0f, screen_height / 2.0f };
+    glm::vec2 snake_head = { 
+        floor(screen_width / (2.0f * SEGMENT_SIZE)) * SEGMENT_SIZE,
+        floor(screen_height / (2.0f * SEGMENT_SIZE)) * SEGMENT_SIZE 
+    };
     this->segments.push_back(snake_head);
 
     // add some more segments just to test
-    this->segments.push_back({snake_head.x, snake_head.y- 20.0f});
-    this->segments.push_back({snake_head.x, snake_head.y- 40.0f});
+    this->segments.push_back({snake_head.x, snake_head.y - SEGMENT_SIZE});
+    this->segments.push_back({snake_head.x, snake_head.y - (2*SEGMENT_SIZE)});
 
 }
 
@@ -62,13 +65,11 @@ void Snake::move()
 
     switch (this->direction)
     {
-        case Direction::UP: this->segments[0].y--; break;
-        case Direction::DOWN: this->segments[0].y++; break;
-        case Direction::LEFT: this->segments[0].x--; break;
-        case Direction::RIGHT: this->segments[0].x++; break;
+        case Direction::UP:     this->segments[0].y -= SEGMENT_SIZE; break;
+        case Direction::DOWN:   this->segments[0].y += SEGMENT_SIZE; break;
+        case Direction::LEFT:   this->segments[0].x -= SEGMENT_SIZE; break;
+        case Direction::RIGHT:  this->segments[0].x += SEGMENT_SIZE; break;
     }
-
-    
 }
 
 void Snake::set_direction(Direction dir)

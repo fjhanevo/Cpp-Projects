@@ -16,22 +16,23 @@ public:
 
     void run();
 private:
-    GLFWwindow *window;
     unsigned int screen_width, screen_height;
+    GLFWwindow *window;
     GameState state;
     Snake snake;
+    bool keys[1024];
 
     void init();
     void init_snake();
-    void cleanup();
+    void update(float dt);
     void render();
-    void update();
     void process_input();
+    void cleanup();
 
     // ----- Snake specific functions ----- 
     void draw_borders();
     void spawn_food();
-    
+    float move_timer = 0.0f; 
     // callback wrappers
     static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
     static void framebuffer_size_callback(GLFWwindow *window, int width, int height);

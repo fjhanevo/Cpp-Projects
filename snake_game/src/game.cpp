@@ -60,6 +60,7 @@ void Game::init()
         std::cout << "Failed to initialize GLAD\n";
         return;
     }
+
     // load shaders
     ResourceManager::load_shader(vert_path.c_str(), frag_path.c_str(), "sprite");
     // configure shaders
@@ -80,20 +81,35 @@ void Game::init()
 
 }
 
-
-
 void Game::run()
 {
+    float delta_time = 0.0f;
+    float last_frame = 0.0f;
+
     while(!glfwWindowShouldClose(window)) {
+        float current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame;
+        last_frame = current_frame;
         process_input();
-        update();
+        update(delta_time);
         render();
     }
 }
 
-void Game::update()
+void Game::update(float dt)
 {
-    this->snake.move();
+    const float MOVE_INTERVAL = 0.15f;  // the snake will move every 0.15 seconds
+    if (this->state == GAME_ACTIVE)
+    {
+        this->move_timer += dt;
+
+        // check if enough time has passed to move the snake
+        if (this->move_timer >= MOVE_INTERVAL)
+        {
+            this->snake.move();
+            this->move_timer = 0.0f;
+        }
+    }
 }
 
 void Game::process_input()
@@ -126,6 +142,7 @@ void Game::render()
     glClearColor(0.3f, 0.5f, 0.0f, 1.0f);   // draw a green background
     glClear(GL_COLOR_BUFFER_BIT);
     draw_borders();
+    glDisable(GL_BLEND);
     snake.draw(*Renderer);
 
     glfwSwapBuffers(window);

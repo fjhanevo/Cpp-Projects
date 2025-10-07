@@ -5,6 +5,7 @@
 #include "sprite_renderer.h"
 
 enum class Direction { UP, DOWN, LEFT, RIGHT };
+const float SEGMENT_SIZE = 20.0f;
 
 class Snake {
 public:

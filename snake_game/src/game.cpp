@@ -85,12 +85,38 @@ void Game::run()
 {
     while(!glfwWindowShouldClose(window)) {
         process_input();
+        update();
         render();
     }
 }
 
+void Game::update()
+{
+    this->snake.move();
+}
+
 void Game::process_input()
 {
+    if (this->state == GAME_ACTIVE) 
+    {
+        Direction current_dir = this->snake.get_direction();
+        Direction new_dir = current_dir;
+        if (this->keys[GLFW_KEY_W]) new_dir = Direction::UP;
+        if (this->keys[GLFW_KEY_A]) new_dir = Direction::LEFT;
+        if (this->keys[GLFW_KEY_S]) new_dir = Direction::DOWN;
+        if (this->keys[GLFW_KEY_D]) new_dir = Direction::RIGHT;
+
+        // prevent reversing the direction
+        if (!((current_dir == Direction::UP && new_dir == Direction::DOWN) ||
+             (current_dir == Direction::DOWN && new_dir == Direction::UP) ||
+             (current_dir == Direction::LEFT && new_dir == Direction::RIGHT) ||
+             (current_dir == Direction::RIGHT && new_dir == Direction::LEFT)))
+        {
+            this->snake.set_direction(new_dir);
+        } 
+        
+    }
+
     glfwPollEvents();
 }
 

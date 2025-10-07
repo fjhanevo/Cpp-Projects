@@ -18,7 +18,8 @@ std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 
 
 Game::Game(unsigned int width, unsigned int height)
-: screen_width(width), screen_height(height), window(nullptr), state(GAME_ACTIVE), snake(width, height)
+: screen_width(width), screen_height(height), window(nullptr), 
+  state(GAME_ACTIVE), snake(width, height), keys()
 {
     init();
 }
@@ -184,15 +185,23 @@ void Game::draw_borders()
 
 
 // ----- Static callback functions -----
-
 void Game::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    // get Game instance
+    // get the game instance
     Game *game = static_cast<Game*>(glfwGetWindowUserPointer(window));
-    if (game) {
+    if (game) 
+    {
         if (key == GLFW_KEY_Q && action == GLFW_PRESS ||
             key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
+
+        if (key >= 0 && key < 1024)
+        {
+            if (action == GLFW_PRESS)
+                game->keys[key] = true;
+            else if (action == GLFW_RELEASE)
+                game->keys[key] = false;
+        }
     }
 }
 

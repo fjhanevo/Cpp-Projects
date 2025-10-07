@@ -4,7 +4,7 @@
 
 Snake::Snake(unsigned int screen_width, unsigned int screen_height)
 {
-    this->current_direction = Direction::RIGHT;
+    this->direction = Direction::RIGHT;
 
     this->segments.clear();
 
@@ -52,6 +52,31 @@ void Snake::draw(SpriteRenderer &renderer)
             );
         }
     }
+}
+
+void Snake::move()
+// updates head position and shifts the body backwards
+{
+    for (size_t i = this->segments.size() - 1; i > 0; i--)
+        this->segments[i] = this->segments[i-1];
+
+    switch (this->direction)
+    {
+        case Direction::UP: this->segments[0].y--; break;
+        case Direction::DOWN: this->segments[0].y++; break;
+        case Direction::LEFT: this->segments[0].x--; break;
+        case Direction::RIGHT: this->segments[0].x++; break;
+    }
 
     
+}
+
+void Snake::set_direction(Direction dir)
+{
+    this->direction = dir;
+}
+
+Direction Snake::get_direction() const
+{
+    return this->direction;
 }

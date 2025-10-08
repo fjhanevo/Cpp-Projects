@@ -106,6 +106,8 @@ void Game::update(float dt)
         // check if enough time has passed to move the snake
         if (this->move_timer >= MOVE_INTERVAL)
         {
+            Direction next_dir = this->snake.get_next_direction();
+            this->snake.set_direction(next_dir);
             this->snake.move();
             this->move_timer = 0.0f;
         }
@@ -116,20 +118,20 @@ void Game::process_input()
 {
     if (this->state == GAME_ACTIVE) 
     {
-        Direction current_dir = this->snake.get_direction();
-        Direction new_dir = current_dir;
+        Direction new_dir = this->snake.get_next_direction();
         if (this->keys[GLFW_KEY_W]) new_dir = Direction::UP;
         if (this->keys[GLFW_KEY_A]) new_dir = Direction::LEFT;
         if (this->keys[GLFW_KEY_S]) new_dir = Direction::DOWN;
         if (this->keys[GLFW_KEY_D]) new_dir = Direction::RIGHT;
 
+        Direction current_dir = this->snake.get_current_direction();
         // prevent reversing the direction
         if (!((current_dir == Direction::UP && new_dir == Direction::DOWN) ||
              (current_dir == Direction::DOWN && new_dir == Direction::UP) ||
              (current_dir == Direction::LEFT && new_dir == Direction::RIGHT) ||
              (current_dir == Direction::RIGHT && new_dir == Direction::LEFT)))
         {
-            this->snake.set_direction(new_dir);
+            this->snake.queue_direction(new_dir);
         } 
         
     }

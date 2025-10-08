@@ -3,8 +3,8 @@
 #include "sprite_renderer.h"
 
 Snake::Snake(unsigned int screen_width, unsigned int screen_height)
+: current_direction(Direction::DOWN), next_direction(Direction::DOWN)
 {
-    this->direction = Direction::RIGHT;
 
     this->segments.clear();
 
@@ -63,7 +63,7 @@ void Snake::move()
     for (size_t i = this->segments.size() - 1; i > 0; i--)
         this->segments[i] = this->segments[i-1];
 
-    switch (this->direction)
+    switch (this->current_direction)
     {
         case Direction::UP:     this->segments[0].y -= SEGMENT_SIZE; break;
         case Direction::DOWN:   this->segments[0].y += SEGMENT_SIZE; break;
@@ -74,10 +74,20 @@ void Snake::move()
 
 void Snake::set_direction(Direction dir)
 {
-    this->direction = dir;
+    this->current_direction= dir;
 }
 
-Direction Snake::get_direction() const
+void Snake::queue_direction(Direction dir)
 {
-    return this->direction;
+    this->next_direction = dir;
+}
+
+Direction Snake::get_current_direction() const
+{
+    return this->current_direction;
+}
+
+Direction Snake::get_next_direction() const
+{
+    return this->next_direction;
 }

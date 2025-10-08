@@ -16,12 +16,15 @@ public:
     void grow();
 
     void set_direction(Direction dir);
-    Direction get_direction() const;
+    void queue_direction(Direction dir);
+    Direction get_current_direction() const;
+    Direction get_next_direction() const;
 
     
 private:
     std::vector<glm::vec2> segments;
-    Direction direction;
+    Direction current_direction;
+    Direction next_direction;
 
     bool check_collision();
 };

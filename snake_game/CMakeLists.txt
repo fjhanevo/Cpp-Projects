@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.19.2)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 17)
 
 project(snake_game)
 
@@ -13,6 +14,8 @@ configure_file(config.h.in config.h)
 add_executable(snake_game
     src/main.cpp
     src/game.cpp
+    src/snake.cpp
+    src/food.cpp
     src/extern/glad.c
     src/extern/shader.cpp
     src/extern/texture.cpp

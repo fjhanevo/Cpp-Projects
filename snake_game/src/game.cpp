@@ -14,8 +14,8 @@
 
 std::mt19937 dev;
 std::random_device r;
-std::uniform_int_distribution<> dist_x(0, SCREEN_WIDTH  / TILE_SIZE - 1);
-std::uniform_int_distribution<> dist_y(0, SCREEN_HEIGHT / TILE_SIZE - 1);
+std::uniform_int_distribution<> dist_x(1, SCREEN_WIDTH  / TILE_SIZE - 2);
+std::uniform_int_distribution<> dist_y(1, SCREEN_HEIGHT / TILE_SIZE - 2);
 
 
 SpriteRenderer *Renderer;
@@ -117,6 +117,12 @@ void Game::update(float dt)
             this->snake.move();
             this->move_timer = 0.0f;
         }
+        
+        this->food.update(dt);
+        check_collision();
+
+        if (!this->food.is_active)
+            spawn_food();
     }
 }
 
@@ -151,7 +157,8 @@ void Game::render()
     glClear(GL_COLOR_BUFFER_BIT);
     draw_borders();
     glDisable(GL_BLEND);
-    snake.draw(*Renderer);
+    this->snake.draw(*Renderer);
+    this->food.draw(*Renderer);
 
     glfwSwapBuffers(window);
 }
@@ -168,22 +175,22 @@ void Game::draw_borders()
 {
     Texture2D border_tex = ResourceManager::get_texture("temp");
     glm::vec3 border_color = glm::vec3(0.6f, 0.3f, 0.0f);
-    float tile_size = 20.0f;
     // draw top and bottom border
+    glm::vec2 border_size =  glm::vec2(TILE_SIZE, TILE_SIZE);
     for (unsigned int x = 0; x < this->screen_width; x++)
     {
         // top border
         Renderer->draw_sprite(
             border_tex,
             glm::vec2(x, 0.0f),
-            glm::vec2(tile_size, tile_size),
+            border_size,
             0.0f, border_color
         );
         // Bottom border
         Renderer->draw_sprite(
             border_tex,
-            glm::vec2(x, this->screen_height - tile_size),
-            glm::vec2(tile_size, tile_size),
+            glm::vec2(x, this->screen_height - TILE_SIZE),
+            border_size,
             0.0f, border_color
         );
     }
@@ -194,15 +201,15 @@ void Game::draw_borders()
         Renderer->draw_sprite(
             border_tex,
             glm::vec2(0.0f, y),
-            glm::vec2(tile_size, tile_size),
+            border_size,
             0.0f, border_color
         );
 
         // Left column
         Renderer->draw_sprite(
             border_tex,
-            glm::vec2(this->screen_width - tile_size, y),
-            glm::vec2(tile_size, tile_size),
+            glm::vec2(this->screen_width - TILE_SIZE, y),
+            border_size,
             0.0f, border_color
         );
     }
@@ -214,8 +221,8 @@ void Game::spawn_food()
     glm::vec2 pos;
     while (!is_valid) 
     {
-        pos.x = dist_x(r);
-        pos.y = dist_y(r);
+        pos.x = dist_x(r) * TILE_SIZE;
+        pos.y = dist_y(r) * TILE_SIZE;
 
         // assume position is valid, check it doesn't spawn on the snake
         is_valid = true;
@@ -232,6 +239,23 @@ void Game::spawn_food()
     this->food.spawn(pos);
 }
 
+void Game::check_collision()
+{
+    // check snake_head and food collision
+    if (this->food.is_active)
+    {
+        if (this->snake.get_head_position() == this->food.position)
+        {
+            this->snake.grow();
+            this->food.is_active = false;
+        }
+    }
+
+    glm::vec2 snake_head_pos = this->snake.get_head_position();
+    if (snake_head_pos.x <= 0 || snake_head_pos.x >= SCREEN_WIDTH - 1||
+        snake_head_pos.y <= 0 || snake_head_pos.y >= SCREEN_HEIGHT - 1)
+        this->state = GAME_LOST;
+}
 
 // ----- Static callback functions -----
 void Game::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)

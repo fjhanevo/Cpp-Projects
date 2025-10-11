@@ -5,12 +5,18 @@
 #include "texture.h"
 #include "resource_manager.h"
 #include "config.h"
-#include "snake.h"
 
+#include <random>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
+
+std::mt19937 dev;
+std::random_device r;
+std::uniform_int_distribution<> dist_x(0, SCREEN_WIDTH  / TILE_SIZE - 1);
+std::uniform_int_distribution<> dist_y(0, SCREEN_HEIGHT / TILE_SIZE - 1);
+
 
 SpriteRenderer *Renderer;
 std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
@@ -19,7 +25,7 @@ std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 
 Game::Game(unsigned int width, unsigned int height)
 : screen_width(width), screen_height(height), window(nullptr), 
-  state(GAME_ACTIVE), snake(width, height), keys()
+  state(GAME_ACTIVE), snake(width, height), food(), keys()
 {
     init();
 }
@@ -200,6 +206,30 @@ void Game::draw_borders()
             0.0f, border_color
         );
     }
+}
+
+void Game::spawn_food()
+{
+    bool is_valid = false;
+    glm::vec2 pos;
+    while (!is_valid) 
+    {
+        pos.x = dist_x(r);
+        pos.y = dist_y(r);
+
+        // assume position is valid, check it doesn't spawn on the snake
+        is_valid = true;
+        
+        for (const auto& segment : this->snake.get_segments())
+        {
+            if (segment.x == pos.x && segment.y == pos.y)
+            {
+                is_valid = false;
+                break;
+            }
+        }
+    }
+    this->food.spawn(pos);
 }
 
 

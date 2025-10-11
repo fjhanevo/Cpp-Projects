@@ -15,11 +15,6 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height)
         floor(screen_height / (2.0f * SEGMENT_SIZE)) * SEGMENT_SIZE 
     };
     this->segments.push_back(snake_head);
-
-    // add some more segments just to test
-    this->segments.push_back({snake_head.x, snake_head.y - SEGMENT_SIZE});
-    this->segments.push_back({snake_head.x, snake_head.y - (2*SEGMENT_SIZE)});
-
 }
 
 void Snake::draw(SpriteRenderer &renderer)
@@ -33,28 +28,31 @@ void Snake::draw(SpriteRenderer &renderer)
     glm::vec3 snake_tail_color = glm::vec3(0.8f, 0.2f, 0.2f);
     glm::vec2 snake_size = glm::vec2(TILE_SIZE, TILE_SIZE);
 
-    if (!segments.empty())
-    {
+    if (segments.empty())
+        return;
+    
         // draw head first
-        renderer.draw_sprite(
-            snake_head_tex, 
-            segments[0],
-            snake_size,
-            0.0f,   // TODO: Make head rotate based on Direction
-            snake_head_color
-        );
+    renderer.draw_sprite(
+        snake_head_tex, 
+        segments[0],
+        snake_size,
+        0.0f,   // TODO: Make head rotate based on Direction
+        snake_head_color
+    );
 
-        // draw rest of the body
-        for (size_t i = 1; i < segments.size() - 1; ++i)
-        {
-            renderer.draw_sprite(
-                snake_body_tex,
-                segments[i],
-                snake_size,
-                0.0f,
-                snake_body_color
-            );
-        }
+    // draw rest of the body
+    for (size_t i = 1; i < segments.size() - 1; ++i)
+    {
+        renderer.draw_sprite(
+            snake_body_tex,
+            segments[i],
+            snake_size,
+            0.0f,
+            snake_body_color
+        );
+    }
+    // draw the tail
+    if (this->segments.size() > 1)
         renderer.draw_sprite(
             snake_tail_tex,
             segments[segments.size()-1],
@@ -62,7 +60,7 @@ void Snake::draw(SpriteRenderer &renderer)
             0.0f,
             snake_tail_color
         );
-    }
+    
 }
 
 void Snake::move()
@@ -82,8 +80,8 @@ void Snake::move()
 
 void Snake::grow()
 {
-    glm::vec2 last_pos = this->segments[this->segments.size()-1];
-    this->segments.push_back({last_pos.x, last_pos.y - SEGMENT_SIZE});
+    if (!this->segments.empty())
+        this->segments.push_back(this->segments.back());
 }
 
 void Snake::set_direction(Direction dir)
@@ -109,4 +107,14 @@ Direction Snake::get_next_direction() const
 glm::vec2 Snake::get_head_position() const
 {
     return this->segments[0];
+}
+
+int Snake::get_length() const
+{
+    return this->segments.size();
+}
+
+const std::vector<glm::vec2>& Snake::get_segments() const
+{
+    return this->segments;
 }

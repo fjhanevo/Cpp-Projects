@@ -1,6 +1,7 @@
 #include "snake.h"
 #include "resource_manager.h"
 #include "sprite_renderer.h"
+#include "config.h"
 
 Snake::Snake(unsigned int screen_width, unsigned int screen_height)
 : current_direction(Direction::DOWN), next_direction(Direction::DOWN)
@@ -21,16 +22,16 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height)
 
 }
 
-
 void Snake::draw(SpriteRenderer &renderer)
 {
     Texture2D snake_head_tex = ResourceManager::get_texture("temp");
     Texture2D snake_body_tex = ResourceManager::get_texture("temp");
+    Texture2D snake_tail_tex = ResourceManager::get_texture("temp");
     
     glm::vec3 snake_head_color = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 snake_body_color = glm::vec3(0.2f, 0.2f, 0.2f);
-    float tile_size = 20.0f;
-    glm::vec2 snake_size = glm::vec2(tile_size, tile_size);
+    glm::vec3 snake_tail_color = glm::vec3(0.8f, 0.2f, 0.2f);
+    glm::vec2 snake_size = glm::vec2(TILE_SIZE, TILE_SIZE);
 
     if (!segments.empty())
     {
@@ -44,7 +45,7 @@ void Snake::draw(SpriteRenderer &renderer)
         );
 
         // draw rest of the body
-        for (size_t i = 1; i < segments.size(); ++i)
+        for (size_t i = 1; i < segments.size() - 1; ++i)
         {
             renderer.draw_sprite(
                 snake_body_tex,
@@ -54,6 +55,13 @@ void Snake::draw(SpriteRenderer &renderer)
                 snake_body_color
             );
         }
+        renderer.draw_sprite(
+            snake_tail_tex,
+            segments[segments.size()-1],
+            snake_size,
+            0.0f,
+            snake_tail_color
+        );
     }
 }
 
@@ -70,6 +78,12 @@ void Snake::move()
         case Direction::LEFT:   this->segments[0].x -= SEGMENT_SIZE; break;
         case Direction::RIGHT:  this->segments[0].x += SEGMENT_SIZE; break;
     }
+}
+
+void Snake::grow()
+{
+    glm::vec2 last_pos = this->segments[this->segments.size()-1];
+    this->segments.push_back({last_pos.x, last_pos.y - SEGMENT_SIZE});
 }
 
 void Snake::set_direction(Direction dir)

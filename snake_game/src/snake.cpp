@@ -105,3 +105,8 @@ Direction Snake::get_next_direction() const
 {
     return this->next_direction;
 }
+
+glm::vec2 Snake::get_head_position() const
+{
+    return this->segments[0];
+}

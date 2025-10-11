@@ -17,6 +17,8 @@ public:
 
     void set_direction(Direction dir);
     void queue_direction(Direction dir);
+
+    glm::vec2 get_head_position() const;
     Direction get_current_direction() const;
     Direction get_next_direction() const;
 
@@ -26,5 +28,4 @@ private:
     Direction current_direction;
     Direction next_direction;
 
-    bool check_collision();
 };

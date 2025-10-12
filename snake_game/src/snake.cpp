@@ -11,8 +11,8 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height)
 
     // create snake in the centre of the screen
     glm::vec2 snake_head = { 
-        floor(screen_width / (2.0f * SEGMENT_SIZE)) * SEGMENT_SIZE,
-        floor(screen_height / (2.0f * SEGMENT_SIZE)) * SEGMENT_SIZE 
+        floor(screen_width / (2.0f * TILE_SIZE)) * TILE_SIZE,
+        floor(screen_height / (2.0f * TILE_SIZE)) * TILE_SIZE 
     };
     this->segments.push_back(snake_head);
 }
@@ -31,7 +31,7 @@ void Snake::draw(SpriteRenderer &renderer)
     if (segments.empty())
         return;
     
-        // draw head first
+    // draw head first
     renderer.draw_sprite(
         snake_head_tex, 
         segments[0],
@@ -71,10 +71,10 @@ void Snake::move()
 
     switch (this->current_direction)
     {
-        case Direction::UP:     this->segments[0].y -= SEGMENT_SIZE; break;
-        case Direction::DOWN:   this->segments[0].y += SEGMENT_SIZE; break;
-        case Direction::LEFT:   this->segments[0].x -= SEGMENT_SIZE; break;
-        case Direction::RIGHT:  this->segments[0].x += SEGMENT_SIZE; break;
+        case Direction::UP:     this->segments[0].y -= TILE_SIZE; break;
+        case Direction::DOWN:   this->segments[0].y += TILE_SIZE; break;
+        case Direction::LEFT:   this->segments[0].x -= TILE_SIZE; break;
+        case Direction::RIGHT:  this->segments[0].x += TILE_SIZE; break;
     }
 }
 
@@ -86,7 +86,7 @@ void Snake::grow()
 
 void Snake::set_direction(Direction dir)
 {
-    this->current_direction= dir;
+    this->current_direction = dir;
 }
 
 void Snake::queue_direction(Direction dir)

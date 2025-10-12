@@ -5,7 +5,6 @@
 #include "sprite_renderer.h"
 
 enum class Direction { UP, DOWN, LEFT, RIGHT };
-const float SEGMENT_SIZE = 20.0f;
 
 class Snake {
 public:
@@ -21,6 +20,8 @@ public:
     glm::vec2 get_head_position() const;
     Direction get_current_direction() const;
     Direction get_next_direction() const;
+    int get_length() const;
+    const std::vector<glm::vec2>& get_segments() const;
 
     
 private:

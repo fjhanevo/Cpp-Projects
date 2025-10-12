@@ -25,7 +25,7 @@ std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 
 Game::Game(unsigned int width, unsigned int height)
 : screen_width(width), screen_height(height), window(nullptr), 
-  state(GAME_ACTIVE), snake(width, height), food(), keys()
+  state(GAME_ACTIVE), snake(width, height), food(), keys(), keys_processed()
 {
     init();
 }
@@ -128,6 +128,15 @@ void Game::update(float dt)
 
 void Game::process_input()
 {
+    if (this->keys[GLFW_KEY_P] && !this->keys_processed[GLFW_KEY_P])
+    {
+        if (this->state == GAME_ACTIVE)
+            this->state = GAME_PAUSE;
+        else if (this->state == GAME_PAUSE)
+            this->state = GAME_ACTIVE;
+        this->keys_processed[GLFW_KEY_P] = true;
+    }
+    
     if (this->state == GAME_ACTIVE) 
     {
         Direction new_dir = this->snake.get_next_direction();
@@ -145,7 +154,6 @@ void Game::process_input()
         {
             this->snake.queue_direction(new_dir);
         } 
-        
     }
 
     glfwPollEvents();
@@ -294,7 +302,11 @@ void Game::key_callback(GLFWwindow *window, int key, int scancode, int action, i
             if (action == GLFW_PRESS)
                 game->keys[key] = true;
             else if (action == GLFW_RELEASE)
+            {
                 game->keys[key] = false;
+                game->keys_processed[key] = false;
+            }
+                
         }
     }
 }

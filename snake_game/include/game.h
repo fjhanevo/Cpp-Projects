@@ -6,8 +6,7 @@
 
 enum GameState {
     GAME_ACTIVE,
-    GAME_MENU,
-    GAME_WIN,
+    GAME_PAUSE,
     GAME_LOST
 };
 
@@ -24,6 +23,7 @@ private:
     Snake snake;
     Food food;
     bool keys[1024];
+    bool keys_processed[1024];
 
     void init();
     void init_snake();

@@ -251,10 +251,31 @@ void Game::check_collision()
         }
     }
 
+    // check border collision
     glm::vec2 snake_head_pos = this->snake.get_head_position();
-    if (snake_head_pos.x <= 0 || snake_head_pos.x >= SCREEN_WIDTH - 1||
-        snake_head_pos.y <= 0 || snake_head_pos.y >= SCREEN_HEIGHT - 1)
-        this->state = GAME_LOST;
+    if (snake_head_pos.x < TILE_SIZE ||
+        snake_head_pos.x >= SCREEN_WIDTH - TILE_SIZE||
+        snake_head_pos.y < TILE_SIZE ||
+        snake_head_pos.y >= SCREEN_HEIGHT - TILE_SIZE
+    ) this->state = GAME_LOST;
+    
+    // check self collision
+    std::vector<glm::vec2> segments = this->snake.get_segments(); 
+    
+    // can't crash with itself if the length of the snake is less than 4
+    if (segments.size() < 4)
+        return;
+
+    for (size_t i = 1; i < segments.size(); i++)
+    {
+        if (snake_head_pos  == segments[i]) 
+        {
+            this->state = GAME_LOST;
+            break;
+        }
+    }
+
+    
 }
 
 // ----- Static callback functions -----

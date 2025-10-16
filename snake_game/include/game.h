@@ -18,6 +18,7 @@ public:
     void run();
 private:
     unsigned int screen_width, screen_height;
+    unsigned int score;
     GLFWwindow *window;
     GameState state;
     Snake snake;

@@ -7,8 +7,11 @@ project(snake_game)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(Freetype REQUIRED)
+
 
 configure_file(config.h.in config.h)
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # ---- Executables ---- 
 add_executable(snake_game
@@ -32,5 +35,6 @@ target_include_directories(snake_game PRIVATE
     ${CMAKE_BINARY_DIR}
 )
 target_link_libraries(snake_game PRIVATE OpenGL::GL glfw)
+target_link_libraries(snake_game PRIVATE ${FREETYPE_LIBRARIES})
 
 

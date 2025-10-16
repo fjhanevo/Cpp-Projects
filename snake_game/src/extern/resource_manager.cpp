@@ -1,12 +1,14 @@
 #include "resource_manager.h"
 #include "shader.h"
 #include "stb_image.h"
+#include "texture.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture2D> ResourceManager::textures;
+
 
 Shader ResourceManager::load_shader(const char *v_shader_file, const char *f_shader_file, std::string name)
 {

@@ -24,6 +24,7 @@ add_executable(snake_game
     src/extern/texture.cpp
     src/extern/resource_manager.cpp
     src/extern/sprite_renderer.cpp
+    src/extern/text_renderer.cpp
     src/extern/stb_image.cpp
 
 )

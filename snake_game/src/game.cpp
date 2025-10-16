@@ -5,12 +5,15 @@
 #include "texture.h"
 #include "resource_manager.h"
 #include "config.h"
+#include "text_renderer.h"
 
 #include <random>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
+
 
 std::mt19937 dev;
 std::random_device r;
@@ -19,12 +22,14 @@ std::uniform_int_distribution<> dist_y(1, SCREEN_HEIGHT / TILE_SIZE - 2);
 
 
 SpriteRenderer *Renderer;
+TextRenderer *Text;
 std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
 std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
+std::string font_path = std::string(RESOURCE_DIR) + "/fonts/slkscr.ttf";
 
 
 Game::Game(unsigned int width, unsigned int height)
-: screen_width(width), screen_height(height), window(nullptr), 
+: screen_width(width), screen_height(height), score(0), window(nullptr), 
   state(GAME_ACTIVE), snake(width, height), food(), keys(), keys_processed()
 {
     init();
@@ -77,13 +82,14 @@ void Game::init()
 
     Shader shader = ResourceManager::get_shader("sprite");
     Renderer = new SpriteRenderer(shader);
+    Text = new TextRenderer(this->screen_width, this->screen_height);
+    Text->load(font_path.c_str(), 24);
 
     // Create a texture placeholder
     unsigned char white_px[3] = { 255, 255, 255 };
     Texture2D temp_tex;
     temp_tex.generate(1, 1, white_px);
     ResourceManager::textures["temp"] = temp_tex;
-
 
 }
 
@@ -161,19 +167,26 @@ void Game::process_input()
 
 void Game::render()
 {
-    glClearColor(0.3f, 0.5f, 0.0f, 1.0f);   // draw a green background
-    glClear(GL_COLOR_BUFFER_BIT);
-    draw_borders();
-    glDisable(GL_BLEND);
-    this->snake.draw(*Renderer);
-    this->food.draw(*Renderer);
+    if (this->state == GAME_ACTIVE)
+    {
+        glClearColor(0.3f, 0.5f, 0.0f, 1.0f);   // draw a green background
+        glClear(GL_COLOR_BUFFER_BIT);
+        draw_borders();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        this->snake.draw(*Renderer);
+        this->food.draw(*Renderer);
+        std::stringstream ss; ss << this->score;
+        Text->render_text("Score:"+ss.str(), TILE_SIZE, TILE_SIZE, 1.0f);
 
+    }
     glfwSwapBuffers(window);
 }
 
 void Game::cleanup()
 {
     delete Renderer;
+    delete Text;
     ResourceManager::clear();
     glfwTerminate();
 }
@@ -256,6 +269,8 @@ void Game::check_collision()
         {
             this->snake.grow();
             this->food.is_active = false;
+
+            this->score++;  
         }
     }
 
@@ -282,8 +297,6 @@ void Game::check_collision()
             break;
         }
     }
-
-    
 }
 
 // ----- Static callback functions -----

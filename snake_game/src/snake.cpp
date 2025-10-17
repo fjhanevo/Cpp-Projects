@@ -84,6 +84,17 @@ void Snake::grow()
         this->segments.push_back(this->segments.back());
 }
 
+void Snake::reset_snake(unsigned int screen_width, unsigned int screen_height)
+{
+    this->segments.clear();
+    glm::vec2 snake_head = { 
+        floor(screen_width / (2.0f * TILE_SIZE)) * TILE_SIZE,
+        floor(screen_height / (2.0f * TILE_SIZE)) * TILE_SIZE 
+    };
+    this->segments.push_back(snake_head);
+
+}
+
 void Snake::set_direction(Direction dir)
 {
     this->current_direction = dir;

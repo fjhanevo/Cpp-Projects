@@ -23,12 +23,13 @@ public:
     Direction get_next_direction() const;
     int get_length() const;
     const std::vector<glm::vec2>& get_segments() const;
-    
 
-    
 private:
     std::vector<glm::vec2> segments;
     Direction current_direction;
     Direction next_direction;
+    // Render variables
+    glm::vec2 snake_size;
+
 
 };

@@ -164,8 +164,18 @@ void Game::process_input()
     }
     if (this-> state == GAME_LOST)
     {
-        if (this->keys[GLFW_KEY_Y]) play_again();
-        if (this->keys[GLFW_KEY_N]) glfwSetWindowShouldClose(this->window, true);
+        
+        if (this->keys[GLFW_KEY_Y] && !this->keys_processed[GLFW_KEY_Y]) 
+        {
+            this->play_again();
+            this->keys_processed[GLFW_KEY_Y] = true;
+        }
+        if (this->keys[GLFW_KEY_N] && !this->keys_processed[GLFW_KEY_N]) 
+        {
+            glfwSetWindowShouldClose(this->window, true);
+            this->keys_processed[GLFW_KEY_N] = true;
+        }
+
     }
 
 
@@ -221,9 +231,9 @@ void Game::play_again()
 {
     this->snake.reset_snake(this->screen_width, this->screen_height);
     this->score = 0;
-    this->state = GAME_ACTIVE;
     if (this->food.is_active)
         this->food.is_active = false;
+    this->state = GAME_ACTIVE;
 }
 
 // ----- Game functions ----- 

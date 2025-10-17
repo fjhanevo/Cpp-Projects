@@ -32,6 +32,7 @@ private:
     void render();
     void process_input();
     void cleanup();
+    void play_again();
 
     // ----- Snake specific functions ----- 
     void draw_borders();

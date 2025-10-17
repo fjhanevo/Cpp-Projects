@@ -13,6 +13,7 @@ public:
     void draw(SpriteRenderer &renderer);
     void move();
     void grow();
+    void reset_snake(unsigned int screen_width, unsigned int screen_height);
 
     void set_direction(Direction dir);
     void queue_direction(Direction dir);
@@ -22,6 +23,7 @@ public:
     Direction get_next_direction() const;
     int get_length() const;
     const std::vector<glm::vec2>& get_segments() const;
+    
 
     
 private:

@@ -1,5 +1,6 @@
 #include "game.h"
 #include "shader.h"
+#include "snake.h"
 #include "texture.h"
 #include "sprite_renderer.h"
 #include "texture.h"
@@ -161,6 +162,12 @@ void Game::process_input()
             this->snake.queue_direction(new_dir);
         } 
     }
+    if (this-> state == GAME_LOST)
+    {
+        if (this->keys[GLFW_KEY_Y]) play_again();
+        if (this->keys[GLFW_KEY_N]) glfwSetWindowShouldClose(this->window, true);
+    }
+
 
     glfwPollEvents();
 }
@@ -180,6 +187,25 @@ void Game::render()
         Text->render_text("Score:"+ss.str(), TILE_SIZE, TILE_SIZE, 1.0f);
 
     }
+
+    if (this->state == GAME_LOST)
+    {
+        std::stringstream ss; ss << this->score;
+        Text->render_text(
+            "Your Score:"+ss.str(), 
+            floor(SCREEN_WIDTH / (2.0f * TILE_SIZE)) * TILE_SIZE,
+            floor(SCREEN_HEIGHT / (2.0f * TILE_SIZE)) * TILE_SIZE,
+            1.0
+        );
+        
+        Text->render_text(
+            "Play Again [y/N]",
+            floor(SCREEN_WIDTH / (2.0f * TILE_SIZE)) * TILE_SIZE,
+            floor(SCREEN_HEIGHT / (2.0f * TILE_SIZE)) * TILE_SIZE + TILE_SIZE,
+            1.0
+        );
+
+    }
     glfwSwapBuffers(window);
 }
 
@@ -189,6 +215,15 @@ void Game::cleanup()
     delete Text;
     ResourceManager::clear();
     glfwTerminate();
+}
+
+void Game::play_again()
+{
+    this->snake.reset_snake(this->screen_width, this->screen_height);
+    this->score = 0;
+    this->state = GAME_ACTIVE;
+    if (this->food.is_active)
+        this->food.is_active = false;
 }
 
 // ----- Game functions ----- 

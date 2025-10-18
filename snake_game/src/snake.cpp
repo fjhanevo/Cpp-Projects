@@ -7,9 +7,9 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height) :
     current_direction(Direction::DOWN), 
     next_direction(Direction::DOWN), 
     snake_size(TILE_SIZE, TILE_SIZE),
-    head_texture(ResourceManager::_get_texture("temp")),
-    body_texture(ResourceManager::_get_texture("temp")),
-    tail_texture(ResourceManager::_get_texture("temp"))
+    head_texture(ResourceManager::get_texture("temp")),
+    body_texture(ResourceManager::get_texture("temp")),
+    tail_texture(ResourceManager::get_texture("temp"))
 {
 
     this->segments.clear();

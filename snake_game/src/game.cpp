@@ -31,7 +31,7 @@ std::string font_path = std::string(RESOURCE_DIR) + "/fonts/slkscr.ttf";
 
 Game::Game(unsigned int width, unsigned int height)
 : screen_width(width), screen_height(height), score(0), window(nullptr), 
-  state(GAME_ACTIVE), snake(width, height), food(), keys(), keys_processed()
+  state(GAME_ACTIVE), keys(), keys_processed()
 {
     init();
 }
@@ -92,6 +92,9 @@ void Game::init()
     temp_tex.generate(1, 1, white_px);
     ResourceManager::textures["temp"] = temp_tex;
 
+    // Create Snake and Food objects
+    this->snake = new Snake(this->screen_width, this->screen_height);
+    this->food = new Food();
 }
 
 void Game::run()
@@ -119,16 +122,16 @@ void Game::update(float dt)
         // check if enough time has passed to move the snake
         if (this->move_timer >= MOVE_INTERVAL)
         {
-            Direction next_dir = this->snake.get_next_direction();
-            this->snake.set_direction(next_dir);
-            this->snake.move();
+            Direction next_dir = this->snake->get_next_direction();
+            this->snake->set_direction(next_dir);
+            this->snake->move();
             this->move_timer = 0.0f;
         }
         
-        this->food.update(dt);
+        this->food->update(dt);
         check_collision();
 
-        if (!this->food.is_active)
+        if (!this->food->is_active)
             spawn_food();
     }
 }
@@ -146,25 +149,24 @@ void Game::process_input()
     
     if (this->state == GAME_ACTIVE) 
     {
-        Direction new_dir = this->snake.get_next_direction();
+        Direction new_dir = this->snake->get_next_direction();
         if (this->keys[GLFW_KEY_W]) new_dir = Direction::UP;
         if (this->keys[GLFW_KEY_A]) new_dir = Direction::LEFT;
         if (this->keys[GLFW_KEY_S]) new_dir = Direction::DOWN;
         if (this->keys[GLFW_KEY_D]) new_dir = Direction::RIGHT;
 
-        Direction current_dir = this->snake.get_current_direction();
+        Direction current_dir = this->snake->get_current_direction();
         // prevent reversing the direction
         if (!((current_dir == Direction::UP && new_dir == Direction::DOWN) ||
              (current_dir == Direction::DOWN && new_dir == Direction::UP) ||
              (current_dir == Direction::LEFT && new_dir == Direction::RIGHT) ||
              (current_dir == Direction::RIGHT && new_dir == Direction::LEFT)))
         {
-            this->snake.queue_direction(new_dir);
+            this->snake->queue_direction(new_dir);
         } 
     }
-    if (this-> state == GAME_LOST)
+    if (this->state == GAME_LOST)
     {
-        
         if (this->keys[GLFW_KEY_Y] && !this->keys_processed[GLFW_KEY_Y]) 
         {
             this->play_again();
@@ -175,7 +177,6 @@ void Game::process_input()
             glfwSetWindowShouldClose(this->window, true);
             this->keys_processed[GLFW_KEY_N] = true;
         }
-
     }
 
 
@@ -191,8 +192,8 @@ void Game::render()
         draw_borders();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        this->snake.draw(*Renderer);
-        this->food.draw(*Renderer);
+        this->snake->draw(*Renderer);
+        this->food->draw(*Renderer);
         std::stringstream ss; ss << this->score;
         Text->render_text("Score:"+ss.str(), TILE_SIZE, TILE_SIZE, 1.0f);
 
@@ -223,16 +224,18 @@ void Game::cleanup()
 {
     delete Renderer;
     delete Text;
+    delete snake;
+    delete food;
     ResourceManager::clear();
     glfwTerminate();
 }
 
 void Game::play_again()
 {
-    this->snake.reset_snake(this->screen_width, this->screen_height);
+    this->snake->reset_snake(this->screen_width, this->screen_height);
     this->score = 0;
-    if (this->food.is_active)
-        this->food.is_active = false;
+    if (this->food->is_active)
+        this->food->is_active = false;
     this->state = GAME_ACTIVE;
 }
 
@@ -293,7 +296,7 @@ void Game::spawn_food()
         // assume position is valid, check it doesn't spawn on the snake
         is_valid = true;
         
-        for (const auto& segment : this->snake.get_segments())
+        for (const auto& segment : this->snake->get_segments())
         {
             if (segment.x == pos.x && segment.y == pos.y)
             {
@@ -302,25 +305,25 @@ void Game::spawn_food()
             }
         }
     }
-    this->food.spawn(pos);
+    this->food->spawn(pos);
 }
 
 void Game::check_collision()
 {
     // check snake_head and food collision
-    if (this->food.is_active)
+    if (this->food->is_active)
     {
-        if (this->snake.get_head_position() == this->food.position)
+        if (this->snake->get_head_position() == this->food->position)
         {
-            this->snake.grow();
-            this->food.is_active = false;
+            this->snake->grow();
+            this->food->is_active = false;
 
             this->score++;  
         }
     }
 
     // check border collision
-    glm::vec2 snake_head_pos = this->snake.get_head_position();
+    glm::vec2 snake_head_pos = this->snake->get_head_position();
     if (snake_head_pos.x < TILE_SIZE ||
         snake_head_pos.x >= SCREEN_WIDTH - TILE_SIZE||
         snake_head_pos.y < TILE_SIZE ||
@@ -328,7 +331,7 @@ void Game::check_collision()
     ) this->state = GAME_LOST;
     
     // check self collision
-    std::vector<glm::vec2> segments = this->snake.get_segments(); 
+    std::vector<glm::vec2> segments = this->snake->get_segments(); 
     
     // can't crash with itself if the length of the snake is less than 4
     if (segments.size() < 4)

@@ -17,4 +17,5 @@ public:
     void spawn(glm::vec2 position);
 private:
     float food_timer;
+    Texture2D &food_texture;
 };

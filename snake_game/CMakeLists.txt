@@ -19,6 +19,7 @@ add_executable(snake_game
     src/game.cpp
     src/snake.cpp
     src/food.cpp
+    src/border.cpp
     src/extern/glad.c
     src/extern/shader.cpp
     src/extern/texture.cpp

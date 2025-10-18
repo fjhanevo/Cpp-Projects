@@ -29,9 +29,10 @@ std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 std::string font_path = std::string(RESOURCE_DIR) + "/fonts/slkscr.ttf";
 
 
-Game::Game(unsigned int width, unsigned int height)
-: screen_width(width), screen_height(height), score(0), window(nullptr), 
-  state(GAME_ACTIVE), keys(), keys_processed()
+Game::Game(unsigned int width, unsigned int height) :
+    screen_width(width), screen_height(height), score(0), window(nullptr), 
+    state(GAME_ACTIVE),snake(nullptr), food(nullptr), border(nullptr),
+    keys(), keys_processed()
 {
     init();
 }
@@ -95,6 +96,8 @@ void Game::init()
     // Create Snake and Food objects
     this->snake = new Snake(this->screen_width, this->screen_height);
     this->food = new Food();
+    this->border = new Border(this->screen_width, this->screen_height);
+    // assign border texture
 }
 
 void Game::run()
@@ -179,7 +182,6 @@ void Game::process_input()
         }
     }
 
-
     glfwPollEvents();
 }
 
@@ -189,7 +191,7 @@ void Game::render()
     {
         glClearColor(0.3f, 0.5f, 0.0f, 1.0f);   // draw a green background
         glClear(GL_COLOR_BUFFER_BIT);
-        draw_borders();
+        this->border->draw(*Renderer);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         this->snake->draw(*Renderer);
@@ -226,10 +228,12 @@ void Game::cleanup()
     delete Text;
     delete snake;
     delete food;
+    delete border;
     ResourceManager::clear();
     glfwTerminate();
 }
 
+// ----- Game functions ----- 
 void Game::play_again()
 {
     this->snake->reset_snake(this->screen_width, this->screen_height);
@@ -237,51 +241,6 @@ void Game::play_again()
     if (this->food->is_active)
         this->food->is_active = false;
     this->state = GAME_ACTIVE;
-}
-
-// ----- Game functions ----- 
-void Game::draw_borders()
-{
-    Texture2D border_tex = ResourceManager::get_texture("temp");
-    glm::vec3 border_color = glm::vec3(0.6f, 0.3f, 0.0f);
-    // draw top and bottom border
-    glm::vec2 border_size =  glm::vec2(TILE_SIZE, TILE_SIZE);
-    for (unsigned int x = 0; x < this->screen_width; x++)
-    {
-        // top border
-        Renderer->draw_sprite(
-            border_tex,
-            glm::vec2(x, 0.0f),
-            border_size,
-            0.0f, border_color
-        );
-        // Bottom border
-        Renderer->draw_sprite(
-            border_tex,
-            glm::vec2(x, this->screen_height - TILE_SIZE),
-            border_size,
-            0.0f, border_color
-        );
-    }
-
-    for (unsigned int y = 0; y < this->screen_height; y++)
-    {
-        // Right column
-        Renderer->draw_sprite(
-            border_tex,
-            glm::vec2(0.0f, y),
-            border_size,
-            0.0f, border_color
-        );
-
-        // Left column
-        Renderer->draw_sprite(
-            border_tex,
-            glm::vec2(this->screen_width - TILE_SIZE, y),
-            border_size,
-            0.0f, border_color
-        );
-    }
 }
 
 void Game::spawn_food()

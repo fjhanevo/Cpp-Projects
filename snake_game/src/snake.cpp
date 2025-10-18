@@ -4,8 +4,12 @@
 #include "config.h"
 
 Snake::Snake(unsigned int screen_width, unsigned int screen_height) :
-current_direction(Direction::DOWN), next_direction(Direction::DOWN),
-snake_size(glm::vec2(TILE_SIZE, TILE_SIZE))
+    current_direction(Direction::DOWN), 
+    next_direction(Direction::DOWN), 
+    snake_size(TILE_SIZE, TILE_SIZE),
+    head_texture(ResourceManager::_get_texture("temp")),
+    body_texture(ResourceManager::_get_texture("temp")),
+    tail_texture(ResourceManager::_get_texture("temp"))
 {
 
     this->segments.clear();
@@ -16,13 +20,11 @@ snake_size(glm::vec2(TILE_SIZE, TILE_SIZE))
         floor(screen_height / (2.0f * TILE_SIZE)) * TILE_SIZE 
     };
     this->segments.push_back(snake_head);
+
 }
 
 void Snake::draw(SpriteRenderer &renderer)
 {
-    Texture2D head_tex = ResourceManager::get_texture("temp");
-    Texture2D body_tex = ResourceManager::get_texture("temp");
-    Texture2D tail_tex = ResourceManager::get_texture("temp");
     
     glm::vec3 snake_head_color = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 snake_body_color = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -33,18 +35,17 @@ void Snake::draw(SpriteRenderer &renderer)
     
     // draw head first
     renderer.draw_sprite(
-        head_tex, 
+        this->head_texture, 
         segments[0],
         this->snake_size,
         0.0f,   // TODO: Make head rotate based on Direction
         snake_head_color
     );
-
     // draw rest of the body
     for (size_t i = 1; i < segments.size() - 1; ++i)
     {
         renderer.draw_sprite(
-            body_tex,
+            this->body_texture,
             segments[i],
             snake_size,
             0.0f,
@@ -54,13 +55,12 @@ void Snake::draw(SpriteRenderer &renderer)
     // draw the tail
     if (this->segments.size() > 1)
         renderer.draw_sprite(
-            tail_tex,
+            this->tail_texture,
             segments[segments.size()-1],
             snake_size,
             0.0f,
             snake_tail_color
         );
-    
 }
 
 void Snake::move()

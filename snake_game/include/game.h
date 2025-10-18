@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "snake.h"
 #include "food.h"
+#include "border.h"
 
 enum GameState {
     GAME_ACTIVE,
@@ -23,6 +24,7 @@ private:
     GameState state;
     Snake *snake;
     Food *food;
+    Border *border;
     bool keys[1024];
     bool keys_processed[1024];
 
@@ -35,7 +37,6 @@ private:
     void play_again();
 
     // ----- Snake specific functions ----- 
-    void draw_borders();
     void spawn_food();
     void check_collision();
     float move_timer = 0.0f; 

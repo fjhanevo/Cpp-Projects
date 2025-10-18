@@ -18,8 +18,7 @@ public:
     // loads and generates texture files
     static Texture2D load_texture(const char *file, bool alpha, std::string name);
     // get a stored texture
-    static Texture2D get_texture(std::string name);
-    static Texture2D &_get_texture(std::string name);
+    static Texture2D &get_texture(std::string name);
 
     // cleanup function
     static void clear();

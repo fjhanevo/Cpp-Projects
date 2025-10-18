@@ -21,8 +21,8 @@ private:
     unsigned int score;
     GLFWwindow *window;
     GameState state;
-    Snake snake;
-    Food food;
+    Snake *snake;
+    Food *food;
     bool keys[1024];
     bool keys_processed[1024];
 

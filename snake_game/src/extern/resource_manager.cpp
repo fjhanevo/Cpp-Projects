@@ -32,6 +32,10 @@ Texture2D ResourceManager::get_texture(std::string name)
     return textures[name];
 }
 
+Texture2D &ResourceManager::_get_texture(std::string name)
+{
+    return textures.at(name);
+}
 
 void ResourceManager::clear()
 {

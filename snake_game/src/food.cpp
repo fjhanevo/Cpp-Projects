@@ -7,7 +7,7 @@ Food::Food() :
     is_active(false), 
     position(0.0f, 0.0f), 
     food_timer(0.0f),
-    food_texture(ResourceManager::_get_texture("temp"))
+    food_texture(ResourceManager::get_texture("temp"))
 {}
 
 void Food::draw(SpriteRenderer &renderer)

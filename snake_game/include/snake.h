@@ -1,8 +1,8 @@
 #pragma once
+#include "sprite_renderer.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
-#include "sprite_renderer.h"
 
 enum class Direction { UP, DOWN, LEFT, RIGHT };
 
@@ -22,14 +22,17 @@ public:
     Direction get_current_direction() const;
     Direction get_next_direction() const;
     int get_length() const;
-    const std::vector<glm::vec2>& get_segments() const;
+    const std::vector<glm::vec2> &get_segments() const;
 
 private:
     std::vector<glm::vec2> segments;
     Direction current_direction;
     Direction next_direction;
-    // Render variables
     glm::vec2 snake_size;
 
+    // ----- Textures ----- 
+    Texture2D &head_texture;
+    Texture2D &body_texture;
+    Texture2D &tail_texture;
 
 };

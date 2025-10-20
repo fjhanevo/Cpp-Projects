@@ -23,6 +23,19 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height) :
 
 }
 
+float Snake::get_rotation() const
+{
+    switch(get_current_direction())
+    {
+        case Direction::DOWN:     return 0.0f;
+        case Direction::LEFT:  return 90.0f;
+        case Direction::RIGHT:   return 180.0f;
+        case Direction::UP:   return 270.0f;
+        default:                return 0.0f;
+    }
+        
+}
+
 void Snake::draw(SpriteRenderer &renderer)
 {
     
@@ -38,7 +51,7 @@ void Snake::draw(SpriteRenderer &renderer)
         this->head_texture, 
         segments[0],
         this->snake_size,
-        0.0f,   // TODO: Make head rotate based on Direction
+        get_rotation(),   // TODO: Make head rotate based on Direction
         snake_head_color
     );
     // draw rest of the body
@@ -48,7 +61,7 @@ void Snake::draw(SpriteRenderer &renderer)
             this->body_texture,
             segments[i],
             snake_size,
-            0.0f,
+            get_rotation(),
             snake_body_color
         );
     }

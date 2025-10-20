@@ -28,6 +28,10 @@ std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
 std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
 std::string font_path = std::string(RESOURCE_DIR) + "/fonts/slkscr.ttf";
 
+inline std::string resource_path(const std::string &file)
+{
+    return std::string(RESOURCE_DIR) + file;
+}
 
 Game::Game(unsigned int width, unsigned int height) :
     screen_width(width), screen_height(height), score(0), window(nullptr), 
@@ -81,6 +85,13 @@ void Game::init()
                            static_cast<float>(this->screen_height), 0.0f, -1.0f, 1.0f);
     ResourceManager::get_shader("sprite").use().set_int("image", 0);
     ResourceManager::get_shader("sprite").set_mat4("projection", projection);
+
+    // ----- Load textures -----
+    ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/snake_head.png").c_str(), true, "snake_head");
+    ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/snake_body.png").c_str(), true, "snake_body");
+    //NOTE: Snake tail looks garbage atm 
+    // ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/snake_tail.png").c_str(), true, "snake_tail");
+    ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/apple.png").c_str(), true, "apple");
 
     Shader shader = ResourceManager::get_shader("sprite");
     Renderer = new SpriteRenderer(shader);

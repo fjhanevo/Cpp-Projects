@@ -29,6 +29,7 @@ private:
     Direction current_direction;
     Direction next_direction;
     glm::vec2 snake_size;
+    float get_rotation() const;
 
     // ----- Textures ----- 
     Texture2D &head_texture;

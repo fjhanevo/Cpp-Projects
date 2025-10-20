@@ -7,8 +7,8 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height) :
     current_direction(Direction::DOWN), 
     next_direction(Direction::DOWN), 
     snake_size(TILE_SIZE, TILE_SIZE),
-    head_texture(ResourceManager::get_texture("temp")),
-    body_texture(ResourceManager::get_texture("temp")),
+    head_texture(ResourceManager::get_texture("snake_head")),
+    body_texture(ResourceManager::get_texture("snake_body")),
     tail_texture(ResourceManager::get_texture("temp"))
 {
 
@@ -26,9 +26,9 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height) :
 void Snake::draw(SpriteRenderer &renderer)
 {
     
-    glm::vec3 snake_head_color = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 snake_body_color = glm::vec3(0.2f, 0.2f, 0.2f);
-    glm::vec3 snake_tail_color = glm::vec3(0.8f, 0.2f, 0.2f);
+    glm::vec3 snake_head_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 snake_body_color = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 snake_tail_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     if (segments.empty())
         return;

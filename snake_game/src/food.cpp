@@ -7,12 +7,12 @@ Food::Food() :
     is_active(false), 
     position(0.0f, 0.0f), 
     food_timer(0.0f),
-    food_texture(ResourceManager::get_texture("temp"))
+    food_texture(ResourceManager::get_texture("apple"))
 {}
 
 void Food::draw(SpriteRenderer &renderer)
 {
-    glm::vec3 food_color = glm::vec3(0.8f, 0.0f, 0.0f);
+    glm::vec3 food_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     if (this->is_active)
     {

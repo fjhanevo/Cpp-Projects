@@ -10,7 +10,7 @@ std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture2D> ResourceManager::textures;
 
 
-Shader ResourceManager::load_shader(const char *v_shader_file, const char *f_shader_file, std::string name)
+Shader ResourceManager::load_shader(const fs::path &v_shader_file, const fs::path &f_shader_file, std::string name)
 {
     shaders[name] = load_shader_from_file(v_shader_file, f_shader_file);
     return shaders[name];
@@ -21,7 +21,7 @@ Shader ResourceManager::get_shader(std::string name)
     return shaders[name];
 }
 
-Texture2D ResourceManager::load_texture(const char *file, bool alpha, std::string name)
+Texture2D ResourceManager::load_texture(const std::filesystem::path &file, bool alpha, std::string name)
 {
     textures[name] = load_texture_from_file(file, alpha);
     return textures[name];
@@ -40,7 +40,7 @@ void ResourceManager::clear()
         glDeleteTextures(1, &it.second.ID);
 }
 
-Shader ResourceManager::load_shader_from_file(const char *v_shader_file, const char *f_shader_file)
+Shader ResourceManager::load_shader_from_file(const fs::path &v_shader_file, const fs::path &f_shader_file)
 {
     std::string vertex_code;
     std::string fragment_code;
@@ -73,7 +73,7 @@ Shader ResourceManager::load_shader_from_file(const char *v_shader_file, const c
     return shader;
 }
 
-Texture2D ResourceManager::load_texture_from_file(const char *file, bool alpha)
+Texture2D ResourceManager::load_texture_from_file(const fs::path &file, bool alpha)
 {
     Texture2D texture;
     if (alpha) {
@@ -82,7 +82,7 @@ Texture2D ResourceManager::load_texture_from_file(const char *file, bool alpha)
     }
     // load image
     int width, height, nr_channels;
-    unsigned char *data = stbi_load(file, &width, &height, &nr_channels, 0);
+    unsigned char *data = stbi_load(file.string().c_str(), &width, &height, &nr_channels, 0);
 
     texture.generate(width, height, data);
     // free image data

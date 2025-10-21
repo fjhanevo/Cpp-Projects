@@ -9,7 +9,7 @@ Snake::Snake(unsigned int screen_width, unsigned int screen_height) :
     snake_size(TILE_SIZE, TILE_SIZE),
     head_texture(ResourceManager::get_texture("snake_head")),
     body_texture(ResourceManager::get_texture("snake_body")),
-    tail_texture(ResourceManager::get_texture("temp"))
+    tail_texture(ResourceManager::get_texture("snake_tail"))
 {
 
     this->segments.clear();
@@ -27,11 +27,11 @@ float Snake::get_rotation() const
 {
     switch(get_current_direction())
     {
-        case Direction::DOWN:     return 0.0f;
-        case Direction::LEFT:  return 90.0f;
-        case Direction::RIGHT:   return 180.0f;
-        case Direction::UP:   return 270.0f;
-        default:                return 0.0f;
+        case Direction::DOWN:       return 0.0f;
+        case Direction::LEFT:       return 90.0f;
+        case Direction::RIGHT:      return -90.0f;
+        case Direction::UP:         return 180.0f;
+        default:                    return 0.0f;
     }
         
 }

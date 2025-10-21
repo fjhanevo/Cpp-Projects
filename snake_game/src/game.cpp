@@ -14,23 +14,21 @@
 #include <iostream>
 #include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <filesystem>
 
-
+// ----- Random number generation -----
 std::mt19937 dev;
 std::random_device r;
 std::uniform_int_distribution<> dist_x(1, SCREEN_WIDTH  / TILE_SIZE - 2);
 std::uniform_int_distribution<> dist_y(1, SCREEN_HEIGHT / TILE_SIZE - 2);
 
-
 SpriteRenderer *Renderer;
 TextRenderer *Text;
-std::string vert_path = std::string(RESOURCE_DIR) + "/shaders/sprite.vert";
-std::string frag_path = std::string(RESOURCE_DIR) + "/shaders/sprite.frag";
-std::string font_path = std::string(RESOURCE_DIR) + "/fonts/slkscr.ttf";
 
-inline std::string resource_path(const std::string &file)
+// A little helper function to get the correct path for resources
+static fs::path get_path(const std::string &relative_path)
 {
-    return std::string(RESOURCE_DIR) + file;
+    return fs::path(RESOURCE_DIR) / relative_path;
 }
 
 Game::Game(unsigned int width, unsigned int height) :
@@ -79,7 +77,7 @@ void Game::init()
     }
 
     // load shaders
-    ResourceManager::load_shader(vert_path.c_str(), frag_path.c_str(), "sprite");
+    ResourceManager::load_shader(get_path("shaders/sprite.vert"), get_path("shaders/sprite.frag"), "sprite");
     // configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->screen_width),
                            static_cast<float>(this->screen_height), 0.0f, -1.0f, 1.0f);
@@ -87,11 +85,11 @@ void Game::init()
     ResourceManager::get_shader("sprite").set_mat4("projection", projection);
 
     // ----- Load textures -----
-    ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/snake_head.png").c_str(), true, "snake_head");
-    ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/snake_body.png").c_str(), true, "snake_body");
+    ResourceManager::load_texture(get_path("textures/snake_head.png"), true, "snake_head");
+    ResourceManager::load_texture(get_path("textures/snake_body.png"), true, "snake_body");
     //NOTE: Snake tail looks garbage atm 
     // ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/snake_tail.png").c_str(), true, "snake_tail");
-    ResourceManager::load_texture((std::string(RESOURCE_DIR) + "/textures/apple.png").c_str(), true, "apple");
+    ResourceManager::load_texture(get_path("textures/apple.png"), true, "apple");
 
     Shader shader = ResourceManager::get_shader("sprite");
     Renderer = new SpriteRenderer(shader);

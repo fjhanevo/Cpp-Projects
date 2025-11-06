@@ -7,7 +7,7 @@ project(linked_list)
 
 add_executable(linked_list
     src/main.cpp
-    src/node.cpp
+    src/linked_list.cpp
 )
 
 target_include_directories(linked_list PRIVATE 

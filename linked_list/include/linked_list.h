@@ -15,5 +15,5 @@ public:
     void popFront();
 
 private:
-    Node* m_head;
+    Node* m_head{};
 };
